@@ -34,6 +34,7 @@ class GameScene: SKScene {
     var roundState = RoundState.ready
     
     override func didMove(to view: SKView) {
+        physicsWorld.contactDelegate = self
         setupLevel()
         setupGestureRecognizers()
     }
@@ -55,7 +56,7 @@ class GameScene: SKScene {
         case .finished:
             guard let view = view else{return}
             roundState = .animating
-            let moveCameraBackAction = SKAction.move(to: CGPoint(x: view.bounds.size.width/2, y: view.bounds.size.height/2), duration: 2.0)
+            let moveCameraBackAction = SKAction.move(to: CGPoint(x: view.bounds.size.width/2, y: view.bounds.size.height/2), duration: 1.0)
             
             moveCameraBackAction.timingMode = .easeInEaseOut
             gameCamera.run(moveCameraBackAction) {
@@ -110,6 +111,22 @@ class GameScene: SKScene {
         }
         addCamera()
         
+        for child in mapNode.children {
+            if let child = child as? SKSpriteNode {
+                guard let name = child.name else{ continue }
+                if !["wood","stone","glass"].contains(name){continue}
+                guard let type = BlockType(rawValue: name) else {continue}
+                let block = Block(type:type)
+                block.size = child.size
+                block.position = child.position
+                block.zRotation = child.zRotation
+                block.zPosition = ZPosition.obstacles
+                block.createPysicsBody()
+                mapNode.addChild(block)
+                child.removeFromParent()
+            }
+        }
+        
         let physicsRect = CGRect(x: 0, y: mapNode.tileSize.height, width: mapNode.frame.size.width, height: mapNode.frame.size.height-mapNode.tileSize.height)
         
         physicsBody = SKPhysicsBody(edgeLoopFrom: physicsRect)
@@ -144,6 +161,7 @@ class GameScene: SKScene {
         bird.position = anchor.position
         addChild(bird)
         constraintToAnchor(active: true)
+        roundState = .ready
     }
     
     func constraintToAnchor(active: Bool){
@@ -162,6 +180,32 @@ class GameScene: SKScene {
             gameCamera.setConstraints(with: self, and: mapNode.frame, to: nil)
             bird.removeFromParent() // remove bird from scene
             roundState = .finished
+        }
+    }
+}
+
+extension GameScene: SKPhysicsContactDelegate{
+    func didBegin(_ contact: SKPhysicsContact) {
+        let mask = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
+        
+        switch mask {
+        case PhysicsCategory.bird | PhysicsCategory.block , PhysicsCategory.block | PhysicsCategory.edge:
+            if let block = contact.bodyB.node as? Block{
+                block.impact(with: Int(contact.collisionImpulse))
+            }else if let block = contact.bodyA.node as? Block {
+                block.impact(with: Int(contact.collisionImpulse))
+            }
+        case PhysicsCategory.block | PhysicsCategory.block:
+            if let block = contact.bodyA.node as? Block{
+                block.impact(with: Int(contact.collisionImpulse))
+            }
+            if let block = contact.bodyB.node as? Block{
+                block.impact(with: Int(contact.collisionImpulse))
+            }
+        case PhysicsCategory.bird | PhysicsCategory.edge:
+            bird.flying = false
+        default:
+            break
         }
     }
 }

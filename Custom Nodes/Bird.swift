@@ -37,7 +37,7 @@ class Bird: SKSpriteNode {
         case .gray:
             color = UIColor.lightGray
         }
-        super.init(texture: nil,color:color ,size:CGSize(width: 40.0, height: 40.0))
+        super.init(texture: nil,color:color ,size:CGSize(width: 20.0, height: 20.0))
     }
     
     required init?(coder aDecoder: NSCoder) {
