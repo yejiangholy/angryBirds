@@ -15,10 +15,9 @@ enum RoundState{
 
 class GameScene: SKScene {
     
+    var sceneManagerDelegate: SceneManagerDelegate?
     var mapNode = SKTileMapNode()
-    
     let gameCamera = GameCamera()
-    
     var panRecognizer = UIPanGestureRecognizer()
     var pinchRecognizer = UIPinchGestureRecognizer()
     var maxScale:CGFloat = 0
@@ -160,6 +159,7 @@ class GameScene: SKScene {
         bird.physicsBody?.isDynamic = false
         bird.position = anchor.position
         addChild(bird)
+        bird.aspectScale(to: mapNode.tileSize, width: false, multiplier: 1.0)
         constraintToAnchor(active: true)
         roundState = .ready
     }
