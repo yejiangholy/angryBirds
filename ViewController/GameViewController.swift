@@ -42,7 +42,8 @@ extension GameViewController: SceneManagerDelegate{
         let sceneName = "GameScene_\(level)"
         if let gameScene = SKScene(fileNamed: sceneName) as? GameScene{
             gameScene.sceneManagerDelegate = self
-            present(scene:gameScene)
+            gameScene.level = level
+            present(scene:gameScene)  
         }
     }
     

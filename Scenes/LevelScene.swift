@@ -13,10 +13,16 @@ class LevelScene: SKScene {
      var sceneManagerDelegate: SceneManagerDelegate?
     
     override func didMove(to view: SKView) {
-        setupLevelSelection()
+        setupLevelSelection() 
     }
     
     func setupLevelSelection(){
+        let background = SKSpriteNode(imageNamed: "levelBackground")
+        background.position = CGPoint(x:frame.midX, y:frame.midY)
+        background.aspectScale(to: frame.size, width: true, multiplier: 1.0)
+        background.zPosition = ZPosition.background
+        addChild(background)
+        
         var level = 1
         let columnStaringPoint = frame.midX/2
         let rowStaringPoint = frame.midY + frame.midY/2

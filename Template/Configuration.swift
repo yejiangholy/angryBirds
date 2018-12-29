@@ -9,6 +9,10 @@
 import Foundation
 import CoreGraphics
 
+struct Levels{
+    static var levelsDictionary = [String: Any]()
+}
+
 struct ZPosition{
     static let background: CGFloat = 0
     static let obstacles: CGFloat = 1
