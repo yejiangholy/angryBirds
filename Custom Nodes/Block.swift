@@ -22,9 +22,9 @@ class Block: SKSpriteNode {
         self.type = type
         switch type {
         case .wood:
-            health = 200
+            health = 100
         case .stone:
-            health = 500
+            health = 300
         case .glass:
             health = 50
         }
